@@ -41,7 +41,8 @@ int main(int argc, char **argv) {
 
 		//create a queue to which we will push commands for the device
 		//cl::CommandQueue queue(context);
-		cl::CommandQueue queue(context, CL_QUEUE_PROFILING_ENABLE);
+		cl::CommandQueue queue(context, CL_QUEUE_PROFILING_ENABLE);
+
 
 		//2.2 Load & build the device code
 		cl::Program::Sources sources;
@@ -63,10 +64,10 @@ int main(int argc, char **argv) {
 
 		//Part 4 - memory allocation
 		//host - input
-		//vector<int> A = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }; //C++11 allows this type of initialisation
-		//vector<int> B = { 0, 1, 2, 0, 1, 2, 0, 1, 2, 0 };
-		vector<int> A(100000);
-		vector<int> B(100000);
+		vector<int> A = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 }; //C++11 allows this type of initialisation
+		vector<int> B = { 0, 1, 2, 0, 1, 2, 0, 1, 2, 0 , 4, 6 };
+		//vector<int> A(100000);
+		//vector<int> B(100000);
 		
 		size_t vector_elements = A.size();//number of elements
 		size_t vector_size = A.size()*sizeof(int);//size in bytes
@@ -100,17 +101,18 @@ int main(int argc, char **argv) {
 		//5.3 Copy the result from device to host
 		queue.enqueueReadBuffer(buffer_C, CL_TRUE, 0, vector_size, &C[0]);
 
-		//cout << "A = " << A << endl;
-		//cout << "B = " << B << endl;
-		//cout << "C = " << C << endl;
+		cout << "A = " << A << endl;
+		cout << "B = " << B << endl;
+		cout << "C = " << C << endl;
 
 		std::cout << "Kernel execution time [ns]:"<<prof_event.getProfilingInfo<CL_PROFILING_COMMAND_END>() - prof_event.getProfilingInfo<CL_PROFILING_COMMAND_START>() << std::endl;
 
-		std::cout << GetFullProfilingInfo(prof_event, ProfilingResolution::PROF_US) << endl;
+		//std::cout << GetFullProfilingInfo(prof_event, ProfilingResolution::PROF_US) << endl;
 	}
 	catch (cl::Error err) {
 		cerr << "ERROR: " << err.what() << ", " << getErrorString(err.err()) << endl;
 	}
 
 	return 0;
+
 }
