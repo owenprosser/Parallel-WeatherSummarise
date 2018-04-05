@@ -10,13 +10,53 @@ Linking started
 Linking done
 Device build started
 Device build done
-Kernel <add> was successfully vectorized (8)
+Kernel <addOneToInput> was successfully vectorized (8)
+Kernel <addAll> was not vectorized
+Kernel <HS_Scan> was successfully vectorized (8)
+Kernel <B_Scan> was successfully vectorized (8)
+Kernel <blelloch_max> was successfully vectorized (8)
+Kernel <odd_even_sort_ascending> was successfully vectorized (8)
 Done.
-add info:
+addOneToInput info:
 	Maximum work-group size: 8192
 	Compiler work-group size: (0, 0, 0)
 	Local memory size: 0
 	Preferred multiple of work-group size: 128
 	Minimum amount of private memory: 0
+
+addAll info:
+	Maximum work-group size: 2048
+	Compiler work-group size: (0, 0, 0)
+	Local memory size: 0
+	Preferred multiple of work-group size: 128
+	Minimum amount of private memory: 128
+
+HS_Scan info:
+	Maximum work-group size: 2048
+	Compiler work-group size: (0, 0, 0)
+	Local memory size: 0
+	Preferred multiple of work-group size: 128
+	Minimum amount of private memory: 128
+
+B_Scan info:
+	Maximum work-group size: 2048
+	Compiler work-group size: (0, 0, 0)
+	Local memory size: 0
+	Preferred multiple of work-group size: 128
+	Minimum amount of private memory: 128
+
+blelloch_max info:
+	Maximum work-group size: 2048
+	Compiler work-group size: (0, 0, 0)
+	Local memory size: 0
+	Preferred multiple of work-group size: 128
+	Minimum amount of private memory: 128
+
+odd_even_sort_ascending info:
+	Maximum work-group size: 2048
+	Compiler work-group size: (0, 0, 0)
+	Local memory size: 0
+	Preferred multiple of work-group size: 128
+	Minimum amount of private memory: 128
 
 Build succeeded!
