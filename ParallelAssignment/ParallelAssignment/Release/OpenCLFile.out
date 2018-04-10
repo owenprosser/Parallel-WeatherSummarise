@@ -13,6 +13,7 @@ Device build done
 Kernel <add> was successfully vectorized (8)
 Kernel <addAll> was not vectorized
 Kernel <reduce_add_4> was successfully vectorized (8)
+Kernel <reduce_min> was successfully vectorized (8)
 Kernel <reduce_max> was successfully vectorized (8)
 Done.
 add info:
@@ -30,6 +31,13 @@ addAll info:
 	Minimum amount of private memory: 128
 
 reduce_add_4 info:
+	Maximum work-group size: 2048
+	Compiler work-group size: (0, 0, 0)
+	Local memory size: 0
+	Preferred multiple of work-group size: 128
+	Minimum amount of private memory: 128
+
+reduce_min info:
 	Maximum work-group size: 2048
 	Compiler work-group size: (0, 0, 0)
 	Local memory size: 0
