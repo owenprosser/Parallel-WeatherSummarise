@@ -34,16 +34,15 @@ vector<string> get_data_from_line(string line, char delim) {
 	return data;
 }
 
-static void atomicAverage() {
+static void average() {
 	ifstream data_file;
 	string line;
 	string delim = " ";
 
 	vector<vector<string>> file_data;
 
-	/* Create vectors to hold the file data*/
+	/* Vectors used to hold the data read in from the file*/
 
-	vector<int> location;
 	vector<int> temp;
 	vector<struct tm> date_time;
 
@@ -56,13 +55,13 @@ static void atomicAverage() {
 	}
 	cl::Platform default_platform;
 
-	int num_platforms = platforms.size();
+	int number_of_platforms = platforms.size();
 
-	cout << num_platforms << " platforms available on this machine:" << endl;
+	cout << number_of_platforms << " platforms available on this machine:" << endl;
 
 	cout << "Select Platform:" << endl;
 
-	for (int i = 0; i < num_platforms; i++)
+	for (int i = 0; i < number_of_platforms; i++)
 	{
 		cout << i << ": " << platforms[i].getInfo<CL_PLATFORM_NAME>() << endl;
 	}
@@ -105,31 +104,20 @@ static void atomicAverage() {
 
 	data_file.open("temp_lincolnshire.txt");
 
-	if (!data_file) {
+	if (!data_file) { //if the specified txt file can't be found
 		cerr << "can't open the file";
 		exit(1);
 	}
 	else {
 
-		/* Run through every line and put the data in the right vectors, avoids using a seperate loop to save time*/
+		/* Process each line of the txt file to get temperature values*/
 		while (getline(data_file, line)) {
-			//Get the data from the line, split so it can be placed into the correct vectors
+			//Gets each of the lines of data and splits them at the  ' ' so can be incremented
 			vector<string> line_data = get_data_from_line(line, ' ');
 
-			//Create the date_time structure and place it into the date_time vector
-			struct tm date_time_struct;
-			date_time_struct.tm_year = stoi(line_data[1]); // - 1900; //Year is the year from 1900 so 1900 has to be taken from the year given in the file
-			date_time_struct.tm_mon = stoi(line_data[2]) - 1; //Month must be >= 0 and <= 11 so 1 must be taken from the given month value
-			date_time_struct.tm_mday = stoi(line_data[3]);
-			date_time_struct.tm_wday = 0;
-			date_time_struct.tm_yday = 0;
-			date_time_struct.tm_hour = stoi(line_data[4].substr(0, 2)); //The hour is the first two numbers in the time section of the file
-			date_time_struct.tm_min = stoi(line_data[4].substr(2, 2)); //The minute is the two numbers following the hour in the time section
-			date_time_struct.tm_sec = 0; //No second value is given so assumed to be 0
-
-			date_time.push_back(date_time_struct);
+			//get the temperature values from the 5th element of vector
 			float __temp = stof(line_data[5]);
-			//Get the temperature and put it into the temperature structure
+			//push back temperature values to vector
 			temp.push_back(int(__temp*100));
 		}
 		data_file.close();
@@ -142,7 +130,7 @@ static void atomicAverage() {
 	//CREATE COMMAND QUEUE
 	cl::CommandQueue command_queue(context);
 
-	//Add sources
+	//Add the .cl containing all kernels
 	ifstream kernelFile("OpenCLFile.cl");
 	string kernelAsString(istreambuf_iterator<char>(kernelFile), (istreambuf_iterator<char>()));
 
@@ -150,7 +138,6 @@ static void atomicAverage() {
 
 	cl::Program program(context, programSource);
 
-	//Build imported kernel to devices
 	program.build(devices);
 
 	cl::Kernel reduce_add(program, "reduce_add_4");
@@ -161,17 +148,17 @@ static void atomicAverage() {
 
 
 	if (padding_size) {
-		//create an extra vector with neutral values
+		//create vector of 0 values
 		std::vector<float> A_ext(local_size - padding_size, 0.0);
-		//append that extra vector to our input
+		//add this vector to the end of the temperature vector
 		temp.insert(temp.end(), A_ext.begin(), A_ext.end());
 	}
 
 	//Create output vector
 	vector<int> output(temp.size());
-	size_t sizeOfOutput = output.size() * sizeof(float);
+	size_t sizeOfOutput = output.size() * sizeof(int);
 
-	size_t number_of_groups = temp.size() / local_size;
+	//size_t number_of_groups = temp.size() / local_size;
 
 	//Create buffers
 	cl::Buffer temperatures_buffer(context, CL_MEM_READ_WRITE, sizeOfInput);
@@ -194,7 +181,7 @@ static void atomicAverage() {
 
 	float sum_p = output[0];
 
-	printf("to div %i \n", temp.size());
+	printf("%i total temperature records \n", temp.size());
 
 	float mean = (sum_p / temp.size()) / 100;
 
@@ -226,13 +213,13 @@ static void minMax() {
 	}
 	cl::Platform default_platform;
 
-	int num_platforms = platforms.size();
+	int number_of_platforms = platforms.size();
 
-	cout << num_platforms << " platforms available on this machine:" << endl;
+	cout << number_of_platforms << " platforms available on this machine:" << endl;
 
 	cout << "Select Platform:" << endl;
 
-	for (int i = 0; i < num_platforms; i++)
+	for (int i = 0; i < number_of_platforms; i++)
 	{
 		cout << i << ": " << platforms[i].getInfo<CL_PLATFORM_NAME>() << endl;
 	}
@@ -286,18 +273,6 @@ static void minMax() {
 			//Get the data from the line, split so it can be placed into the correct vectors
 			vector<string> line_data = get_data_from_line(line, ' ');
 
-			//Create the date_time structure and place it into the date_time vector
-			struct tm date_time_struct;
-			date_time_struct.tm_year = stoi(line_data[1]); // - 1900; //Year is the year from 1900 so 1900 has to be taken from the year given in the file
-			date_time_struct.tm_mon = stoi(line_data[2]) - 1; //Month must be >= 0 and <= 11 so 1 must be taken from the given month value
-			date_time_struct.tm_mday = stoi(line_data[3]);
-			date_time_struct.tm_wday = 0;
-			date_time_struct.tm_yday = 0;
-			date_time_struct.tm_hour = stoi(line_data[4].substr(0, 2)); //The hour is the first two numbers in the time section of the file
-			date_time_struct.tm_min = stoi(line_data[4].substr(2, 2)); //The minute is the two numbers following the hour in the time section
-			date_time_struct.tm_sec = 0; //No second value is given so assumed to be 0
-
-			date_time.push_back(date_time_struct);
 			//Get the temperature and put it into the temperature structure
 			temp.push_back(stof(line_data[5]));
 		}
@@ -341,7 +316,7 @@ static void minMax() {
 	vector<int> output(temp.size());
 	size_t sizeOfOutput = output.size() * sizeof(float);
 
-	size_t number_of_groups = temp.size() / local_size;
+	//size_t number_of_groups = temp.size() / local_size;
 
 	//Create buffers
 	cl::Buffer temperatures_buffer(context, CL_MEM_READ_WRITE, sizeOfInput);
@@ -376,13 +351,180 @@ static void minMax() {
 
 	float maximum = output[0];
 
-	//printf("to div %i \n", temp.size());
-
-	//float mean = sum_p / temp.size();
 
 	cout << "Maximum Temperature: " << maximum << endl;
 
 	//cout << "Mean: " << mean << endl;
+
+}
+
+static void histogram() {
+	ifstream data_file;
+	string line;
+	string delim = " ";
+
+	vector<vector<string>> file_data;
+
+	/* Create vectors to hold the file data*/
+
+	vector<int> location;
+	vector<int> temp;
+	vector<struct tm> date_time;
+
+	/*GET PLATFORMS*/
+	vector<cl::Platform> platforms;
+	cl::Platform::get(&platforms);
+	if (platforms.size() == 0) {
+		cout << "Error. No openCL devices" << endl;
+		exit(1);
+	}
+	cl::Platform default_platform;
+
+	int number_of_platforms = platforms.size();
+
+	cout << number_of_platforms << " platforms available on this machine:" << endl;
+
+	cout << "Select Platform:" << endl;
+
+	for (int i = 0; i < number_of_platforms; i++)
+	{
+		cout << i << ": " << platforms[i].getInfo<CL_PLATFORM_NAME>() << endl;
+	}
+
+	int selected_platform_number;
+
+	cin >> selected_platform_number;
+
+	default_platform = platforms[selected_platform_number];
+	cout << "Using: " << default_platform.getInfo<CL_PLATFORM_NAME>() << endl;
+
+	/* -------------------------------------------------- */
+
+	/* GET DEVICES*/
+	vector<cl::Device> devices;
+	default_platform.getDevices(CL_DEVICE_TYPE_ALL, &devices);
+	if (devices.size() == 0) {
+		cerr << "Can't find any devices" << endl;
+		exit(1);
+	}
+
+	int num_devices = devices.size();
+
+	cout << "Found: " << num_devices << " devices" << endl;
+
+	cout << "Select a device: " << endl;
+
+	for (int i = 0; i < num_devices; i++)
+	{
+		cout << i << ": " << devices[i].getInfo<CL_DEVICE_NAME>() << endl;
+	}
+
+	int selected_device_number;
+
+	cin >> selected_device_number;
+
+	cl::Device default_device = devices[selected_device_number];
+	cout << "Using: " << default_device.getInfo<CL_DEVICE_NAME>() << endl;
+
+
+	data_file.open("temp_lincolnshire.txt");
+
+	if (!data_file) {
+		cerr << "can't open the file";
+		exit(1);
+	}
+	else {
+
+		/* Run through every line and put the data in the right vectors, avoids using a seperate loop to save time*/
+		while (getline(data_file, line)) {
+			//Get the data from the line, split so it can be placed into the correct vectors
+			vector<string> line_data = get_data_from_line(line, ' ');
+
+			float __temp = stof(line_data[5]);
+			//Get the temperature and put it into the temperature structure
+			temp.push_back(int(__temp * 100));
+		}
+		data_file.close();
+	}
+
+	cout << date_time.size() << "\n";
+
+	cl::Context context{ { default_device } };
+
+	//CREATE COMMAND QUEUE
+	cl::CommandQueue command_queue(context);
+
+	//Add sources
+	ifstream kernelFile("OpenCLFile.cl");
+	string kernelAsString(istreambuf_iterator<char>(kernelFile), (istreambuf_iterator<char>()));
+
+	cl::Program::Sources programSource(1, make_pair(kernelAsString.c_str(), kernelAsString.length() + 1));
+
+	cl::Program program(context, programSource);
+
+	//Build imported kernel to devices
+	program.build(devices);
+
+	cl::Kernel hist_simple(program, "hist");
+
+	size_t sizeOfInput = temp.size() * sizeof(float);
+	size_t local_size = 10;
+	size_t padding_size = temp.size() % local_size;
+
+
+	if (padding_size) {
+		//create an extra vector with neutral values
+		std::vector<float> A_ext(local_size - padding_size, 0.0);
+		//append that extra vector to our input
+		temp.insert(temp.end(), A_ext.begin(), A_ext.end());
+	}
+
+	//Create output vector
+	vector<int> output(temp.size());
+	size_t sizeOfOutput = output.size() * sizeof(float);
+
+	size_t number_of_groups = temp.size() / local_size;
+
+	float minimum = -25;
+	float maximum = 45;
+
+	int bin_no = (maximum - minimum);
+	int binSizes = (maximum - minimum) / bin_no;
+
+	vector<int> historgram_vector(bin_no);
+
+	//Create buffers
+	cl::Buffer temperatures_buffer(context, CL_MEM_READ_WRITE, sizeOfInput);
+	cl::Buffer output_buffer(context, CL_MEM_READ_WRITE, sizeOfOutput);
+
+	//Create queue and copy vectors to device memory
+	cl::CommandQueue queue(context);
+
+	queue.enqueueWriteBuffer(temperatures_buffer, CL_TRUE, 0, sizeOfInput, &temp[0]);
+	queue.enqueueFillBuffer(output_buffer, 0, 0, sizeOfOutput);
+
+	printf("executing Kernel\n");
+
+	//Execute kernel
+	hist_simple.setArg(0, temperatures_buffer);
+	printf("1 \n");
+	hist_simple.setArg(1, output_buffer);
+	printf("2 \n");
+	hist_simple.setArg(2, sizeof(int), &binSizes);
+	printf("3 \n");
+	hist_simple.setArg(3, sizeof(float), &minimum);
+	printf("4 \n");
+	hist_simple.setArg(4, sizeof(float), &maximum);
+	printf("5 \n");
+
+	queue.enqueueNDRangeKernel(hist_simple, cl::NullRange, cl::NDRange(temp.size()), cl::NDRange(local_size));
+
+	queue.enqueueReadBuffer(output_buffer, CL_TRUE, 0, sizeOfOutput, &historgram_vector[0]);
+
+
+	for each (int bin in output) {
+		printf("%d \n", output);
+	}
 
 }
 
@@ -391,16 +533,20 @@ int main(int argc, char **argv) {
 	while (true) {
 		cout << "1. Average. \n";
 		cout << "2. Minimum and Maximum Temperatures. \n";
+		cout << "3. Temperatures Histogram. \n";
 		cout << "q. Quit. \n";
 
 		char choice;
 		cin >> choice;
 
 		if (choice == '1') {
-			atomicAverage();
+			average();
 		}
 		else if (choice == '2') {
 			minMax();
+		}
+		else if (choice == '3') {
+			histogram();
 		}
 		else if (choice == 'q') {
 			exit(0);

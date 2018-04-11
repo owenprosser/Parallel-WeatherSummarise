@@ -11,10 +11,12 @@ Linking done
 Device build started
 Device build done
 Kernel <add> was successfully vectorized (8)
-Kernel <addAll> was not vectorized
 Kernel <reduce_add_4> was successfully vectorized (8)
 Kernel <reduce_min> was successfully vectorized (8)
 Kernel <reduce_max> was successfully vectorized (8)
+Kernel <my_histogram> was successfully vectorized (8)
+Kernel <hist_simple> was successfully vectorized (8)
+Kernel <hist> was successfully vectorized (8)
 Done.
 add info:
 	Maximum work-group size: 8192
@@ -22,13 +24,6 @@ add info:
 	Local memory size: 0
 	Preferred multiple of work-group size: 128
 	Minimum amount of private memory: 0
-
-addAll info:
-	Maximum work-group size: 2048
-	Compiler work-group size: (0, 0, 0)
-	Local memory size: 0
-	Preferred multiple of work-group size: 128
-	Minimum amount of private memory: 128
 
 reduce_add_4 info:
 	Maximum work-group size: 2048
@@ -50,5 +45,26 @@ reduce_max info:
 	Local memory size: 0
 	Preferred multiple of work-group size: 128
 	Minimum amount of private memory: 128
+
+my_histogram info:
+	Maximum work-group size: 8192
+	Compiler work-group size: (0, 0, 0)
+	Local memory size: 0
+	Preferred multiple of work-group size: 128
+	Minimum amount of private memory: 0
+
+hist_simple info:
+	Maximum work-group size: 8192
+	Compiler work-group size: (0, 0, 0)
+	Local memory size: 0
+	Preferred multiple of work-group size: 128
+	Minimum amount of private memory: 0
+
+hist info:
+	Maximum work-group size: 8192
+	Compiler work-group size: (0, 0, 0)
+	Local memory size: 0
+	Preferred multiple of work-group size: 128
+	Minimum amount of private memory: 0
 
 Build succeeded!
