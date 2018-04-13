@@ -1,2 +1,2 @@
 # Parallel-WeatherSummarise
-Creates Summaries of Weather Data using data using OpenCL.
+Creates Summaries of Weather Data using OpenCL.
